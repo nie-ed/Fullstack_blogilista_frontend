@@ -3,19 +3,17 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import BlogForm from './components/BlogForm'
 
 
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
-  const [title, setNewTitle] = useState('')
-  const [author, setNewAuthor] = useState('')
-  const [url, setNewUrl] = useState('')
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
+  const [addBlogVisible, setAddBlogVisible] = useState(false)
+  const [blogs, setBlogs] = useState([]) 
 
 
 
@@ -105,62 +103,39 @@ const App = () => {
       <button onClick={handleLogout}>logout</button>
   )
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url,
-    }
-
+  const addBlog = (blogObject) => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewUrl('')
-        setNewAuthor('')
       })
       .then(returnedBlog => {
-        setNotificationMessage(`a new blog ${title} by ${author} added`, 'note')
+        setNotificationMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`, 'note')
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
+      setAddBlogVisible(false)
     })
   }
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
+
+  const blogForm = () => {
+    const hideWhenVisible = { display: addBlogVisible ? 'none' : '' }
+    const showWhenVisible = { display: addBlogVisible ? '' : 'none' }
+
+    return (
       <div>
-        title:
-          <input
-          type="text"
-          value={title}
-          name="Title"
-          onChange={({ target }) => setNewTitle(target.value)}
-        />
+        <div style={hideWhenVisible}>
+          <button onClick={() => setAddBlogVisible(true)}>new note</button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm createBlog={addBlog}/>
+          <button onClick={() => setAddBlogVisible(false)}>cancel</button>
+        </div>
       </div>
-      <div>
-        author:
-          <input
-          type="text"
-          value={author}
-          name="Author"
-          onChange={({ target }) => setNewAuthor(target.value)}
-        />
-      </div>
-      <div>
-        url:
-          <input
-          type="text"
-          value={url}
-          name="url"
-          onChange={({ target }) => setNewUrl(target.value)}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>  
-  )
+    )
+  }
+
 
 
   return (
@@ -174,9 +149,8 @@ const App = () => {
         <h2>blogs</h2>
         <Notification message={notificationMessage} type='note'/>
        <p>{user.name} logged in {logoutButton()}</p>
-         {blogList()}
-        <h2>create new</h2>
         {blogForm()}
+         {blogList()}
       </div>
       }
     </div>
