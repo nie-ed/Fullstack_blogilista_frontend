@@ -13,7 +13,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [addBlogVisible, setAddBlogVisible] = useState(false)
-  const [blogs, setBlogs] = useState([]) 
+  const [blogs, setBlogs] = useState([])
 
 
 
@@ -91,13 +91,7 @@ const App = () => {
     </form>      
   )
 
-  const blogList = () => (
-    <div>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-    </div>
-  )
+
 
   const logoutButton = () => (
       <button onClick={handleLogout}>logout</button>
@@ -107,7 +101,8 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
+        console.log(returnedBlog)
+        setBlogs(returnedBlog)
       })
       .then(returnedBlog => {
         setNotificationMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`, 'note')
@@ -116,6 +111,24 @@ const App = () => {
       }, 5000)
       setAddBlogVisible(false)
     })
+  }
+
+  const likeBlog = async (blogObject) => {
+    
+    await blogService
+      .like(blogObject.id, blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : blogObject)
+      )})
+  }
+
+  const deleteBlog = async (blogObject) => {
+    await blogService
+      .deleteBlog(blogObject.id)
+      .then(returnedBlog => {
+        setBlogs(blogs.filter(blog => blog.id !== blogObject.id)
+      )}
+  )
   }
 
 
@@ -135,6 +148,18 @@ const App = () => {
       </div>
     )
   }
+  
+  const blogsShown = () => {
+    const show = blogs
+//      .filter(blog => blog.user.username === user.username)
+      .sort((b, a) => a.likes - b.likes)
+
+    return (
+      show
+      .map(blog =>
+        <Blog key={blog.id} blogNow={blog} handleLikes = {likeBlog} handleDelete = {deleteBlog} user={user}/>))
+      
+    }
 
 
 
@@ -150,7 +175,7 @@ const App = () => {
         <Notification message={notificationMessage} type='note'/>
        <p>{user.name} logged in {logoutButton()}</p>
         {blogForm()}
-         {blogList()}
+        {blogsShown()}
       </div>
       }
     </div>
