@@ -8,8 +8,8 @@ import BlogForm from './components/BlogForm'
 
 
 const App = () => {
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [addBlogVisible, setAddBlogVisible] = useState(false)
@@ -19,9 +19,11 @@ const App = () => {
 
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    blogService
+      .getAll()
+      .then(blogs => {
+        setBlogs( blogs )
+      })
   }, [])
 
   useEffect(() => {
@@ -45,7 +47,7 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -71,7 +73,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -80,7 +82,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -88,13 +90,13 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
 
 
 
   const logoutButton = () => (
-      <button onClick={handleLogout}>logout</button>
+    <button onClick={handleLogout}>logout</button>
   )
 
   const addBlog = (blogObject) => {
@@ -106,20 +108,20 @@ const App = () => {
       })
       .then(returnedBlog => {
         setNotificationMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`, 'note')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
-      setAddBlogVisible(false)
-    })
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+        setAddBlogVisible(false)
+      })
   }
 
   const likeBlog = async (blogObject) => {
-    
+
     await blogService
       .like(blogObject.id, blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : blogObject)
-      )})
+        )})
   }
 
   const deleteBlog = async (blogObject) => {
@@ -127,8 +129,8 @@ const App = () => {
       .deleteBlog(blogObject.id)
       .then(returnedBlog => {
         setBlogs(blogs.filter(blog => blog.id !== blogObject.id)
-      )}
-  )
+        )}
+      )
   }
 
 
@@ -148,18 +150,7 @@ const App = () => {
       </div>
     )
   }
-  
-  const blogsShown = () => {
-    const show = blogs
-//      .filter(blog => blog.user.username === user.username)
-      .sort((b, a) => a.likes - b.likes)
 
-    return (
-      show
-      .map(blog =>
-        <Blog key={blog.id} blogNow={blog} handleLikes = {likeBlog} handleDelete = {deleteBlog} user={user}/>))
-      
-    }
 
 
 
@@ -168,14 +159,18 @@ const App = () => {
       {!user && <div>
         <Notification message={notificationMessage} type='error' />
         <h2>log in to application</h2>
-      {loginForm()}
+        {loginForm()}
       </div>}
       {user && <div>
         <h2>blogs</h2>
         <Notification message={notificationMessage} type='note'/>
-       <p>{user.name} logged in {logoutButton()}</p>
+        <p>{user.name} logged in {logoutButton()}</p>
         {blogForm()}
-        {blogsShown()}
+        {console.log(blogs)}
+        {blogs
+          .sort((b, a) => a.likes - b.likes)
+          .map((blog) =>
+            <Blog key={blog.id} blogNow={blog} handleLikes = {likeBlog} handleDelete = {deleteBlog} user={user}/>)}
       </div>
       }
     </div>
