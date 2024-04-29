@@ -32,10 +32,10 @@ const Blog = ({ blogNow, handleLikes, handleDelete, user }) => {
 
       {blogNow.title} {blogNow.author}
       {!showFullBlog ? <button onClick={() => setShowFullBlog(true)}>view</button>:
-        <div>
+        <div className='showDetails'>
           <button onClick={() => setShowFullBlog(false)}>hide</button><br></br>
           {blogNow.url}<br></br>
-      likes {blogNow.likes}<button onClick= {addLike}>like</button><br></br>
+          likes {blogNow.likes}<button onClick= {addLike}>like</button><br></br>
           {blogNow.user.username}<br></br>
 
           <button onClick={() => deleteBlog()}>

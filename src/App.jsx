@@ -99,12 +99,12 @@ const App = () => {
     <button onClick={handleLogout}>logout</button>
   )
 
-  const addBlog = (blogObject) => {
-    blogService
+  const addBlog = async (blogObject) => {
+    await blogService
       .create(blogObject)
       .then(returnedBlog => {
         console.log(returnedBlog)
-        setBlogs(returnedBlog)
+        setBlogs(blogs.concat({ ...returnedBlog, user:user }))
       })
       .then(returnedBlog => {
         setNotificationMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`, 'note')
