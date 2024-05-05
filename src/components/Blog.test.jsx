@@ -12,8 +12,6 @@ describe('<Blog />', () => {
     }
 
     render(<Blog blogNow={blog} />)
-    screen.debug()
-
 
     const element = screen.getByText('Component title renders')
     expect(element).toBeDefined()
