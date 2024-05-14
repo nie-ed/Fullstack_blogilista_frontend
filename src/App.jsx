@@ -74,6 +74,7 @@ const App = () => {
       <div>
         username
         <input
+          data-testid='username'
           type="text"
           value={username}
           name="Username"
@@ -83,6 +84,7 @@ const App = () => {
       <div>
         password
         <input
+          data-testid='password'
           type="password"
           value={password}
           name="Password"
@@ -125,12 +127,16 @@ const App = () => {
   }
 
   const deleteBlog = async (blogObject) => {
-    await blogService
-      .deleteBlog(blogObject.id)
-      .then(returnedBlog => {
-        setBlogs(blogs.filter(blog => blog.id !== blogObject.id)
-        )}
-      )
+    if(blogObject.user.username === user.username) {
+      if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)) {
+        await blogService
+          .deleteBlog(blogObject.id)
+          .then(returnedBlog => {
+            setBlogs(blogs.filter(blog => blog.id !== blogObject.id)
+            )}
+          )
+      }
+    }
   }
 
 
@@ -141,7 +147,7 @@ const App = () => {
     return (
       <div>
         <div style={hideWhenVisible}>
-          <button onClick={() => setAddBlogVisible(true)}>new note</button>
+          <button onClick={() => setAddBlogVisible(true)}>new blog</button>
         </div>
         <div style={showWhenVisible}>
           <BlogForm createBlog={addBlog}/>

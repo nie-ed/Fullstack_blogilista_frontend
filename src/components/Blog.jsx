@@ -2,7 +2,7 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 
 
-const Blog = ({ blogNow, handleLikes, handleDelete, user }) => {
+const Blog = ({ blogNow, handleLikes, handleDelete }) => {
   const [showFullBlog, setShowFullBlog] = useState(false)
 
   const blogStyle = {
@@ -19,13 +19,6 @@ const Blog = ({ blogNow, handleLikes, handleDelete, user }) => {
     handleLikes({ ...blogNow, likes })
   }
 
-  const deleteBlog = () => {
-    if(blogNow.user.username === user.username) {
-      if (window.confirm(`Remove blog ${blogNow.title} by ${blogNow.author}`)) {
-        handleDelete(blogNow)
-      }
-    }
-  }
 
   return (
     <div style={blogStyle}>
@@ -37,10 +30,7 @@ const Blog = ({ blogNow, handleLikes, handleDelete, user }) => {
           {blogNow.url}<br></br>
           likes {blogNow.likes}<button onClick= {addLike}>like</button><br></br>
           {blogNow.user.username}<br></br>
-
-          <button onClick={() => deleteBlog()}>
-        remove
-          </button>
+          <button onClick={() => handleDelete(blogNow)}>remove</button>
         </div> }
     </div>
   )
